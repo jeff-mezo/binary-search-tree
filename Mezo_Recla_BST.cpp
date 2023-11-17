@@ -1,19 +1,23 @@
+/* 
+    BINARY SEARCH TREE
+    Venmark Recla | Jeffer John Mezo
+*/
 #include <iostream>
 
 using namespace std;
 
-struct Node{
+struct Node{ // Struct for tree Node
     int key;
     int count;
-    struct Node *left, *right;
+    struct Node *left, *right; // Points to left and right child nodes
 
-    Node(){
+    Node(){ // Default constructor
         left = NULL;
         right = NULL;
         count = 0;
     }
 
-    Node(int val){
+    Node(int val){ // Constructor with value
         key = val;
         left = NULL;
         right = NULL;
@@ -21,12 +25,12 @@ struct Node{
     }
 };
 
-struct Node* newNode(int key) {
+struct Node* newNode(int key) { // Creates new node
     struct Node* newNode = new Node(key); 
     return newNode;
 }
 
-struct Node* inOrderTraverse(Node* root) {
+struct Node* inOrderTraverse(Node* root) {  // In-order traversal and prints each node
     if(root == NULL) {
         return root;
     }
@@ -37,7 +41,7 @@ struct Node* inOrderTraverse(Node* root) {
     return root;
 }
 
-struct Node* preOrderTraverse(Node *root) {
+struct Node* preOrderTraverse(Node *root) { // Pre-order traversal
     if (root == NULL) {
         return root;
     }
@@ -48,7 +52,7 @@ struct Node* preOrderTraverse(Node *root) {
     return root;
 }
 
-struct Node* postOrderTraverse(Node *root) {
+struct Node* postOrderTraverse(Node *root) { // Post-order traversal
     if (root == NULL) {
         return root;
     }
@@ -59,7 +63,7 @@ struct Node* postOrderTraverse(Node *root) {
     return root;
 }
 
-struct Node* insert(Node* root, int key){
+struct Node* insert(Node* root, int key){ // Insert a new node with the given key
     //If tree is empty, return a new node
     if(root == NULL) {
         root = newNode(key);
@@ -78,7 +82,7 @@ struct Node* insert(Node* root, int key){
     return root;
 }
 
-struct Node* deleteBranch(Node*& root) {
+struct Node* deleteBranch(Node*& root) { // Delete the entire branch starting from the given root
     if (root == nullptr) {
         return nullptr;
     }
@@ -88,7 +92,7 @@ struct Node* deleteBranch(Node*& root) {
     return nullptr;
 }
 
-struct Node* deleteNode(Node* root, int key) {
+struct Node* deleteNode(Node* root, int key) { // Delete a specific node and its branches 
     if (root == nullptr) {
         return nullptr;
     }
@@ -103,7 +107,7 @@ struct Node* deleteNode(Node* root, int key) {
     return root;
 }
 
-struct Node* Search(Node* root, int key) {
+struct Node* Search(Node* root, int key) { // Searches given key in the tree
 
     if(root == NULL) {
         return root;
@@ -122,7 +126,7 @@ struct Node* Search(Node* root, int key) {
 
 }
 
-struct Node* findMaximum(Node* root) {
+struct Node* findMaximum(Node* root) { // Finds node with the maximum value
     if(root == NULL) {
         return root;
     } else if(root->right != NULL) {
@@ -132,7 +136,7 @@ struct Node* findMaximum(Node* root) {
     return root;
 }
 
-struct Node* findMinimum(Node* root) {
+struct Node* findMinimum(Node* root) { // Finds node with the minimum value
     if(root == NULL) {
         return root;
     } else if(root->left != NULL) {
@@ -142,11 +146,81 @@ struct Node* findMinimum(Node* root) {
     return root;
 }
 
+struct Node *findSuccessor(Node *root, int key) // Find successor of a node
+{
+    Node *current = Search(root, key);
+    if (current == NULL)
+    {
+        cout << "Item not found.\n";
+        return NULL;
+    }
+
+    // Case 1: Node has a right subtree
+    if (current->right != NULL)
+    {
+        return findMinimum(current->right);
+    }
+
+    // Case 2: Node does not have a right subtree
+    Node *successor = NULL;
+    Node *ancestor = root;
+
+    while (ancestor != current)
+    {
+        if (current->key < ancestor->key)
+        {
+            successor = ancestor;
+            ancestor = ancestor->left;
+        }
+        else
+        {
+            ancestor = ancestor->right;
+        }
+    }
+
+    return successor;
+}
+
+struct Node *findPredecessor(Node *root, int key) // Find predecessor of a node
+{
+    Node *current = Search(root, key);
+    if (current == NULL)
+    {
+        cout << "Item not found.\n";
+        return NULL;
+    }
+
+    // Case 1: Node has a left subtree
+    if (current->left != NULL)
+    {
+        return findMaximum(current->left);
+    }
+
+    // Case 2: Node does not have a left subtree
+    Node *predecessor = NULL;
+    Node *ancestor = root;
+
+    while (ancestor != current)
+    {
+        if (current->key > ancestor->key)
+        {
+            predecessor = ancestor;
+            ancestor = ancestor->right;
+        }
+        else
+        {
+            ancestor = ancestor->left;
+        }
+    }
+
+    return predecessor;
+}
 
 
+// MAIN CODE
 int main() {
     struct Node* root = NULL;
-    struct Node* temp = NULL;
+    struct Node* temp = NULL; // temporary node for storing returns of functions
     int choice = 1;
     int key;
 
@@ -161,7 +235,7 @@ int main() {
                 cin >> key;
 
                 root = insert(root, key);
-                system("cls");
+                system("cls"); 
 
                 cout << "Tree(Inorder Traversal): ";
                 inOrderTraverse(root);
@@ -222,12 +296,37 @@ int main() {
                 else cout << "Minimum Item in Tree: " << findMinimum(root)->key << "\n\n";
             break;
 
-            case 6:
+           case 6: // FIND SUCCESSOR
+            {
+                if (root == NULL)
+                    cout << "Tree is Empty!\n\n";
 
+                else {
+                    int item;
+                    cout << "Enter Item to Find Successor: ";
+                    cin >> item;
+                    Node *successor = findSuccessor(root, item);
+
+                    if (successor)
+                        cout << "Successor of " << item << ": " << successor->key << "\n\n";
+                }
+            }
             break;
 
-            case 7:
+            case 7: // FIND PREDECESSOR
+            {
+                if (root == NULL)
+                    cout << "Tree is Empty!\n\n";
+                else {
+                    int item;
+                    cout << "Enter Item to Find Predecessor: ";
+                    cin >> item;
+                    Node *predecessor = findPredecessor(root, item);
 
+                    if (predecessor)
+                        cout << "Predecessor of " << item << ": " << predecessor->key << "\n\n";
+                }
+            }
             break;
 
             case 8: // DISPLAY
@@ -242,19 +341,19 @@ int main() {
                     switch (c)
                     {
                     case 1:
-                        cout << "Tree: ";
+                        cout << "Inorder Tree: ";
                         inOrderTraverse(root);
                         cout << "\n\n";
                         break;
                     
                     case 2:
-                        cout << "Tree: ";
+                        cout << "Pre-Order Tree: ";
                         preOrderTraverse(root);
                         cout << "\n\n";
                         break;
 
                     case 3:
-                        cout << "Tree: ";
+                        cout << "Post-Order Tree: ";
                         postOrderTraverse(root);
                         cout << "\n\n";
                         break;
