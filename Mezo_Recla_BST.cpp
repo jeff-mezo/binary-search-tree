@@ -37,14 +37,25 @@ struct Node* inOrderTraverse(Node* root) {
     return root;
 }
 
-struct Node* preOrderTraverse(Node* root) {
-    if(root == NULL) {
+struct Node* preOrderTraverse(Node *root) {
+    if (root == NULL) {
         return root;
     }
-    if(root->key )cout << root->key << " ";
-    preOrderTraverse(root->left);
+
     cout << root->key << " ";
+    preOrderTraverse(root->left);
     preOrderTraverse(root->right);
+    return root;
+}
+
+struct Node* postOrderTraverse(Node *root) {
+    if (root == NULL) {
+        return root;
+    }
+
+    postOrderTraverse(root->left);
+    postOrderTraverse(root->right);
+    cout << root->key << " ";
     return root;
 }
 
@@ -67,31 +78,28 @@ struct Node* insert(Node* root, int key){
     return root;
 }
 
-void deleteBranch(Node*& root) {
-    // cout << "in" ;
-    if(root != NULL) {
-        deleteBranch(root->left);
-        deleteBranch(root->right);
-        delete root;
-        root = NULL;
+struct Node* deleteBranch(Node*& root) {
+    if (root == nullptr) {
+        return nullptr;
     }
+    deleteBranch(root->left);
+    deleteBranch(root->right);
+    delete root;
+    return nullptr;
 }
 
 struct Node* deleteNode(Node* root, int key) {
-    if(root == NULL) {
-        return root;
+    if (root == nullptr) {
+        return nullptr;
+    }
+    if (root->key > key) {
+        root->left = deleteNode(root->left, key);
+    } else if (root->key < key) {
+        root->right = deleteNode(root->right, key);
+    } else {
+        root = deleteBranch(root);
     }
 
-    // Traverse and find key in the tree
-    if(key < root->key) {
-        root->left = deleteNode(root->left, key);
-        return root;
-    } else if(key > root->key) {
-        root->right = deleteNode(root->right, key);
-        return root;
-    } 
-
-    deleteBranch(root);
     return root;
 }
 
@@ -134,6 +142,8 @@ struct Node* findMinimum(Node* root) {
     return root;
 }
 
+
+
 int main() {
     struct Node* root = NULL;
     struct Node* temp = NULL;
@@ -145,68 +155,114 @@ int main() {
         cin >> choice;
         system("cls");
         switch(choice){
-            case 1:
+            case 1: // INSERT
             {
                 cout << "Enter Tree Data: ";
                 cin >> key;
 
                 root = insert(root, key);
-
                 system("cls");
 
-                cout << "Tree: ";
-                //traverseTree(root);
+                cout << "Tree(Inorder Traversal): ";
+                inOrderTraverse(root);
                 cout << "\n\n";
             }
             break;
 
-            case 2:
-                //traverseTree(root);
+            case 2: // DELETE
+                {    
+                    if(root == NULL) {
+                        cout << "Tree is Empty!\n\n";
+                        break;
+                    }
+
+                    cout << "Tree(Inorder Traversal): ";
+                    inOrderTraverse(root);
+                    cout << "\n\n";
+                    
+                    cout << "Enter data to delete: ";
+                    cin >> key;
+                    if(Search(root, key)) {
+                        system("cls");
+                        root = deleteNode(root, key);
+                        if(root != NULL) cout << "Node " << key << " deleted.\n\n";
+                        else cout << "Tree is now empty.\n\n";
+                    } else {
+                        system("cls");
+                        cout << "Item " << key << " not found.\n\n";
+                    }  
+                }
+            break;
+
+            case 3: // SEARCH
+            {
                 if(root == NULL) {
                     cout << "Tree is Empty!\n\n";
                     break;
                 }
-                cout << "Enter data to delete: ";
-                cin >> key;
-
-                temp = deleteNode(root, key);
-
+                int item;
+                cout << "Enter Item to Search: ";
+                cin >> item;
                 system("cls");
-                cout << "Node " << temp->key << " deleted.\n\n";
+                if(Search(root, item)) {
+                    cout << "Item " << item << " is in the Tree.\n\n";
+                } else {
+                    cout << "Item " << item << " not found.\n\n";
+                }
+            }
             break;
 
-            case 3:
+            case 4: // MAXIMUM
+                if(root == NULL) cout << "Tree is Empty!\n\n";
+                else cout << "Maximum Item in Tree: " << findMaximum(root)->key << "\n\n";
             break;
 
-            case 4:
+            case 5: // MINIMUM
+                if(root == NULL) cout << "Tree is Empty!\n\n";
+                else cout << "Minimum Item in Tree: " << findMinimum(root)->key << "\n\n";
             break;
 
-            case 8:
+            case 6:
+
+            break;
+
+            case 7:
+
+            break;
+
+            case 8: // DISPLAY
             {
-                int c;
-                cout << "Choose Traversal Method: \n [1] Inorder\n [2] Pre-order\n [3] Post-Order\nChoice: ";
-                cin >> c;
-                system("cls");
-                switch (c)
+                if(root == NULL) cout << "Tree is Empty!\n\n";
+                else 
                 {
-                case 1:
-                    cout << "Tree: ";
-                    inOrderTraverse(root);
-                    cout << "\n\n";
-                    break;
-                
-                case 2:
-                    cout << "Tree: ";
-                    preOrderTraverse(root);
-                    cout << "\n\n";
-                    break;
+                    int c;
+                    cout << "Choose Traversal Method: \n [1] Inorder\n [2] Pre-order\n [3] Post-Order\nChoice: ";
+                    cin >> c;
+                    system("cls");
+                    switch (c)
+                    {
+                    case 1:
+                        cout << "Tree: ";
+                        inOrderTraverse(root);
+                        cout << "\n\n";
+                        break;
+                    
+                    case 2:
+                        cout << "Tree: ";
+                        preOrderTraverse(root);
+                        cout << "\n\n";
+                        break;
 
-                case 3:
-                    /* code */
-                    break;
-                
-                default:
-                    break;
+                    case 3:
+                        cout << "Tree: ";
+                        postOrderTraverse(root);
+                        cout << "\n\n";
+                        break;
+                        break;
+                    
+                    default:
+                        break;
+                    }
                 }
             }
             break;
@@ -216,29 +272,5 @@ int main() {
         }
     }
 
-    // root = insert(root, 15);
-    // insert(root, 24);
-    // insert(root, 100);
-    // insert(root, 25);
-    // insert(root, 2);
-
-    // traverseTree(root);
-
-    // if(Search(root, 25)) cout << "true\n" ;
-    // else cout << "false\n";
-
-    // // deleteNode(root, 24);
-
-    // // if(Search(root, 24)) cout << "true\n" ;
-    // // else cout << "false\n";
-
-    // Node* max = findMaximum(root);
-    // cout << "\nMaximum:\nKey: " << max->key << "\nCount: " << max->count << endl;
-
-    // Node* min = findMinimum(root);
-    // cout << "\nMinimum:\nKey: " << min->key << "\nCount: " << min->count << endl;
-
-    // if(root != nullptr) traverseTree(root);
-    // else cout << "Tree is empty!\n";
     return 0;
 }
